@@ -3,9 +3,7 @@
 @author Jesse Haviland
 """
 
-from os import read
 import numpy as np
-import spatialmath as sm
 from spatialgeometry import Shape
 import time
 from queue import Queue
@@ -231,9 +229,7 @@ class Swift:
         self.sim_time += dt
 
         if not self.headless:
-
             if render and self.rendering:
-
                 if self.realtime:
                     # If realtime is set, delay progress if we are
                     # running too quickly
@@ -411,8 +407,8 @@ class Swift:
 
             self.swift_objects.append(ob)
             return int(id)
-        elif isinstance(ob, SwiftElement):
 
+        elif isinstance(ob, SwiftElement):
             if ob._added_to_swift:
                 raise ValueError("This element has already been added to Swift")
 
@@ -426,7 +422,6 @@ class Swift:
 
             self._send_socket("element", ob.to_dict())
         elif isinstance(ob, rtb.Robot):
-
             # if ob.base is None:
             #     ob.base = sm.SE3()
 
@@ -480,7 +475,6 @@ class Swift:
         code = None
 
         if isinstance(id, rtb.ERobot) or isinstance(id, Shape):
-
             for i in range(len(self.swift_objects)):
                 if self.swift_objects[i] is not None and id == self.swift_objects[i]:
                     idd = i
@@ -622,14 +616,12 @@ class Swift:
         self._send_socket("camera_pose", transform, False)
 
     def _step_robot(self, robot, dt, readonly):
-
         # robot._set_link_fk(robot.q)
 
         if readonly or robot._control_mode == "p":
             pass  # pragma: no cover
 
         elif robot._control_mode == "v":
-
             step_v(robot._n, robot._valid_qlim, dt, robot._q, robot._qd, robot._qlim)
 
             # _v(robot._q, robot._qd, dt, robot._qlim, robot._valid_qlim)
@@ -655,7 +647,6 @@ class Swift:
         robot._update_link_tf()
 
     def _step_shape(self, shape, dt):
-
         if shape._changed:
             shape._changed = False
             id = self.swift_objects.index(shape)
