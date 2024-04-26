@@ -321,6 +321,50 @@ class Swift:
     #  Methods to interface with the robots created in other environemnts
     #
 
+    def add_batch(self, objects):
+        """
+        Add a batch of objects to the graphical scene
+
+        :param objects: The list of objects to add. Each object in this list should be an instance
+                        that is compatible with the visualizer (e.g., Robot, Shape, or a custom object
+                        that includes necessary graphical properties).
+        :type objects: list
+
+        :return: A list of unique identifiers assigned to the objects within the visualizer. These
+                IDs are essential for future operations such as updates or deletions.
+        :rtype: list of int
+
+        ``ids = env.add_batch([object1, object2, object3])`` adds the objects to the graphical
+        environment. Each object's graphical representation is updated and it is registered within the
+        visualizer's internal management system.
+
+        .. note::
+
+            - This method optimizes the addition of multiple objects by reducing the communication overhead
+            with the graphical backend compared to adding each object individually.
+            - It handles the propagation of the scene graph for each object and sets a flag indicating
+            that they have been added to the visualizer.
+            - In headless mode, this method simply registers the objects without any graphical output.
+            In graphical mode, it communicates with the backend to ensure each object is properly
+            displayed.
+
+        Raises:
+            ValueError: If any object in the list does not conform to the expected structure required for
+                        graphical representation or scene management.
+        """
+        data = []
+        ids = []
+        for i, ob in enumerate(objects):
+            ob._propogate_scene_tree()
+            ob._added_to_swift = True
+            data.append(ob.to_dict())
+            ids.append(len(self.swift_objects) + i)
+        if not self.headless:
+            self._send_socket("shape", [ob.to_dict() for ob in objects])
+
+        self.swift_objects.extend(objects)
+        return ids
+
     def add(self, ob, robot_alpha=1.0, collision_alpha=0.0, readonly=False):
         """
         Add a robot to the graphical scene
