@@ -3,7 +3,6 @@
 @author Jesse Haviland
 """
 
-
 import swift as sw
 import websockets
 import asyncio
@@ -163,7 +162,7 @@ def start_servers(
         outq.put(offer_python)
     else:
         try:
-            inq.get(timeout=10)
+            inq.get(timeout=60)
         except Empty:
             print("\nCould not connect to the Swift simulator \n")
             raise
